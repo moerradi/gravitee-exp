@@ -239,10 +239,10 @@ secrets:
 
 
 # Plugins repository
-#plugins:
-#  path:
-#    - ${gravitee.home}/plugins
-#    - ${gravitee.home}/my-custom-plugins
+plugins:
+  path:
+    - ${gravitee.home}/plugins
+    - ${gravitee.home}/plugins/ext
 # note that for a given plugin a more recent zip file will take precedence regardless its manifest version
 
 # Management repository is used to store global configuration such as APIs, applications, apikeys, ...
@@ -252,16 +252,15 @@ secrets:
 #   jdbc:
 #     liquibase: false
 
-# This is the default configuration using MongoDB (single server)
-# For more information about MongoDB configuration, please have a look to:
-# - http://mongodb.github.io/mongo-java-driver/4.1/apidocs/mongodb-driver-core/com/mongodb/MongoClientSettings.Builder.html
+# Management repository (JDBC)
 management:
-  type: mongodb                  # repository type
-  mongodb:                       # mongodb repository
-#    prefix:                      # collections prefix
-    dbname: ${ds.mongodb.dbname} # mongodb name (default gravitee)
-    host: ${ds.mongodb.host}     # mongodb host (default localhost)
-    port: ${ds.mongodb.port}     # mongodb port (default 27017)
+  type: jdbc
+  jdbc:
+    url: jdbc:postgresql://${ds.postgres.host}:${ds.postgres.port}/${ds.postgres.dbname}
+    username: ${ds.postgres.username}
+    password: ${ds.postgres.password}
+    driver: org.postgresql.Driver
+    liquibase: false
 
 ## Client settings
 #    description:                 # mongodb description (default gravitee.io)
@@ -388,11 +387,14 @@ management:
 #      # useSystemProxy: true # reuses apim-gateway proxy config for other services
 
 # When defining rate-limiting policy, the gateway has to store data to share with other gateway instances.
-# In this example, we are using MongoDB to store counters.
+# In this example, we are using Redis to store counters.
 ratelimit:
-  type: mongodb
-  mongodb:
-    uri: mongodb://${ds.mongodb.host}:${ds.mongodb.port}/${ds.mongodb.dbname}
+  type: redis
+  redis:
+    host: ${ds.redis.host}
+    port: ${ds.redis.port}
+#  mongodb:
+#    uri: mongodb://${ds.mongodb.host}:${ds.mongodb.port}/${ds.mongodb.dbname}
 #  redis:
 #    password:
 #    # Redis Standalone settings
@@ -714,12 +716,17 @@ services:
 
 # Referenced properties
 ds:
-  mongodb:
+  postgres:
     dbname: gravitee
-    host: localhost
-    port: 27017
+    host: postgres
+    port: 5432
+    username: gravitee
+    password: gravitee
+  redis:
+    host: redis
+    port: 6379
   elastic:
-    host: localhost
+    host: elasticsearch
     port: 9200
 
 #system:
