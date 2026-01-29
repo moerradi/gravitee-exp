@@ -10,7 +10,7 @@ This setup includes Gravitee API Management platform with an nginx reverse proxy
 - **Management UI**: Console web interface (internal port 8080)
 - **Portal UI**: Developer portal web interface (internal port 8080)
 - **Alert Engine**: Alerts and notifications service (internal port 8072)
-- **MongoDB**: Database for configuration and analytics
+- **PostgreSQL**: Database for configuration and management data
 - **Elasticsearch**: Search engine for analytics
 - **Redis**: In-memory data store for rate limiting and caching
 
@@ -30,7 +30,7 @@ All services are now accessible through nginx on port 80:
    docker-compose up -d
    ```
 
-2. Wait for all services to be ready (check with `docker-compose logs`)
+2. Wait for all services to be ready (check with `docker-compose logs`). Startup order is healthcheck-based using the technical APIs: management API on port 18083 and gateway on port 18082 (basic auth `admin:adminadmin`).
 
 3. Access the Developer Portal at http://localhost/portal/
 
@@ -69,7 +69,10 @@ Services are isolated by network - only nginx has external ports exposed.
 - Gateway logs: `./logs/apim-gateway` (bind-mounted from `/opt/graviteeio-gateway/logs`)
 - Management API logs: `./logs/apim-management-api` (bind-mounted from `/opt/graviteeio-management-api/logs`)
 
-If log folders are not writable on another machine chmod 777 them.
+If log folders are not writable on another machine, align ownership to the Gravitee UID/GID:
+```bash
+sudo chown -R 1000:1000 logs
+```
 
 ## Troubleshooting
 

@@ -102,7 +102,7 @@ ds:
     username: gravitee
     password: gravitee
   elastic:
-    host: localhost
+    host: elasticsearch
     port: 9200
 jwt:
   secret: myJWT4Gr4v1t33_S3cr3t
