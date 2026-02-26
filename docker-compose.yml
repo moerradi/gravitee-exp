@@ -82,10 +82,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
-      alert_engine:
-        condition: service_started
-      management_api:
-        condition: service_healthy
     environment:
       - gravitee_ratelimit_type=redis
       - gravitee_ratelimit_redis_host=redis
@@ -117,10 +113,6 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
-      redis:
-        condition: service_started
-      alert_engine:
-        condition: service_started
     environment:
       - gravitee_analytics_elasticsearch_endpoints_0=http://elasticsearch:9200
       - gravitee_installation_standalone_portal_url=http://localhost/portal/
@@ -142,12 +134,8 @@ services:
     expose:
       - "8072"
     depends_on:
-      postgres:
+      management_api:
         condition: service_healthy
-      elasticsearch:
-        condition: service_healthy
-      redis:
-        condition: service_started
     healthcheck:
       test: ["CMD-SHELL", "curl -fsS http://localhost:8072/_node/health || exit 1"]
       interval: 10s
